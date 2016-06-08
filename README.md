@@ -42,24 +42,30 @@ edges separately or you can store edges close to vertices they belong to.
 
 Install google test for your distribution. 1.7.0 recommended
 
+```
 yum install gtest-devel
 apt install libgtest-dev
+```
 
 Use a recent toolchain that supports C++11.
 
 CentOS 6:
 
+```
 $ DTLS_RPM=rhscl-devtoolset-3-epel-6-x86_64.noarch.rpm
 $ DTLS_RPM_URL=https://www.softwarecollections.org/en/scls/rhscl/devtoolset-3/epel-6-x86_64/download/${DTLS_RPM}
 $ wget ${DTLS_RPM_URL} -O ${DTLS_RPM}
 $ sudo yum install -y scl-utils ${DTLS_RPM}
 $ sudo yum install -y devtoolset-3-toolchain
 $ scl enable devtoolset-3 bash
+```
 
 Ubuntu:
 
 Use a recent distribution such as 16.04
 
+```
 mkdir build
 cd build; cmake ..
 make -j
+```
