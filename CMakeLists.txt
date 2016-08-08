@@ -76,7 +76,9 @@ set(TESTS
         utilities/table/table_ordering_test.cc
 )
 
-foreach(sourcefile ${APPS})
+set(BINS ${APPS} ${TESTS})
+
+foreach(sourcefile ${BINS})
     string(REPLACE ".cc" "" exename ${sourcefile})
     string(REGEX REPLACE "^((.+)/)+" "" exename ${exename})
     add_executable(${exename}${ARTIFACT_SUFFIX} ${sourcefile})
@@ -87,7 +89,7 @@ foreach(sourcefile ${APPS})
                           gtest gflags rt snappy bz2 lz4 z
                           ${CMAKE_THREAD_LIBS_INIT})
     set_property(TARGET ${exename}${ARTIFACT_SUFFIX} PROPERTY CXX_STANDARD 11)
-endforeach(sourcefile ${EXES})
+endforeach(sourcefile ${APPS})
 
 install(TARGETS keyencoder-static COMPONENT devel ARCHIVE DESTINATION lib)
 install(TARGETS keyencoder-shared COMPONENT runtime DESTINATION lib)
