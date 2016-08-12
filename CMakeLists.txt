@@ -17,8 +17,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -msse4.2 -Woverloaded-virtual")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnon-virtual-dtor")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers")
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} \
-    -fno-omit-frame-pointer -momit-leaf-frame-pointer -DNDEBUG")
+list(APPEND CMAKE_CXX_FLAGS_RELEASE
+     "-fno-omit-frame-pointer -momit-leaf-frame-pointer -DNDEBUG")
 
 endif (UNIX)
 
@@ -33,6 +33,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
+set(EXTRA_LIBRARIES "")
 find_package(Threads)
 find_package(JeMalloc)
 find_package(Rocksdb)
@@ -40,11 +41,18 @@ find_package(Gtest)
 
 if (JEMALLOC_FOUND)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DROCKSDB_JEMALLOC")
+list(APPEND EXTRA_LIBRARIES ${JEMALLOC_LIBRARIES})
 endif (JEMALLOC_FOUND)
 
 if (ROCKSDB_FOUND)
 include_directories(${ROCKSDB_INCLUDE_DIR})
+list(APPEND EXTRA_LIBRARIES ${ROCKSDB_LIBRARIES})
 endif (ROCKSDB_FOUND)
+
+if (GTEST_FOUND)
+include_directories(${GTEST_INCLUDE_DIR})
+list(APPEND EXTRA_LIBRARIES ${GTEST_LIBRARIES})
+endif (GTEST_FOUND)
 
 # Main library source code
 set(SOURCES
@@ -84,9 +92,8 @@ foreach(sourcefile ${BINS})
     add_executable(${exename}${ARTIFACT_SUFFIX} ${sourcefile})
     list(APPEND EXES ${exename}${ARTIFACT_SUFFIX})
     target_link_libraries(${exename}${ARTIFACT_SUFFIX} keyencoder-shared
-                          ${ROCKSDB_LIBRARIES}
-                          ${JEMALLOC_LIBRARIES}
-                          gtest gflags rt snappy bz2 lz4 z
+                          ${EXTRA_LIBRARIES}
+                          gflags rt snappy bz2 lz4 z
                           ${CMAKE_THREAD_LIBS_INIT})
     set_property(TARGET ${exename}${ARTIFACT_SUFFIX} PROPERTY CXX_STANDARD 11)
 endforeach(sourcefile ${APPS})
